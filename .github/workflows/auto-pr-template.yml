@@ -1,0 +1,69 @@
+name: Auto Apply PR Template
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  apply-template:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Apply appropriate template
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const pr = context.payload.pull_request;
+            const base = pr.base.ref;
+            const body = pr.body || '';
+            
+            // PR body가 비어있거나 짧으면 템플릿 적용
+            if (body.length < 100) {
+              let templatePath = '';
+              
+              // base 브랜치에 따라 템플릿 선택
+              if (base === 'backend') {
+                templatePath = '.github/PULL_REQUEST_TEMPLATE/dev_be_pr_template.md';
+              } else if (base === 'frontend') {
+                templatePath = '.github/PULL_REQUEST_TEMPLATE/dev_fe_pr_template.md';
+              } else if (base === 'stage') {
+                templatePath = '.github/PULL_REQUEST_TEMPLATE/stage_pr_template.md';
+              } else if (base === 'prod') {
+                templatePath = '.github/PULL_REQUEST_TEMPLATE/prod_pr_template.md';
+              }
+              
+              if (templatePath) {
+                try {
+                  const template = fs.readFileSync(templatePath, 'utf8');
+                  
+                  await github.rest.pulls.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    body: template
+                  });
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    body: `✅ **${base}** 브랜치에 맞는 PR 템플릿이 자동으로 적용되었습니다!\n\n템플릿: \`${templatePath.split('/').pop()}\`\n\n내용을 작성해주세요! 📝`
+                  });
+                } catch (error) {
+                  console.error('Error applying template:', error);
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    body: `⚠️ PR 템플릿 적용 중 오류가 발생했습니다.\n\n예상 템플릿: \`${templatePath}\`\n\n수동으로 템플릿을 작성해주세요.`
+                  });
+                }
+              }
+            }
