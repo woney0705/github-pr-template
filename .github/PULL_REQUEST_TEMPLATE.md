@@ -11,9 +11,6 @@
 
 ## 🔧 Backend 개발 PR (→ backend 브랜치)
 
-**언제 사용하나요?**
-- `feature/BE-*` → `backend`
-- `fix/BE-*` → `backend`
 
 👉 **[Backend 개발 템플릿으로 전환하기](?template=dev_be_pr_template.md&expand=1)**
 
@@ -21,9 +18,6 @@
 
 ## 🎨 Frontend 개발 PR (→ frontend 브랜치)
 
-**언제 사용하나요?**
-- `feature/FE-*` → `frontend`
-- `fix/FE-*` → `frontend`
 
 👉 **[Frontend 개발 템플릿으로 전환하기](?template=dev_fe_pr_template.md&expand=1)**
 
@@ -31,18 +25,12 @@
 
 ## 🚀 Stage 배포 PR (→ stage 브랜치)
 
-**언제 사용하나요?**
-- `backend` → `stage`
-- `frontend` → `stage`
 
 👉 **[Stage 배포 템플릿으로 전환하기](?template=stage_pr_template.md&expand=1)**
 
 ---
 
 ## 🔥 Production 배포 PR (→ main 브랜치)
-
-**언제 사용하나요?**
-- `stage` → `main`
 
 👉 **[Production 배포 템플릿으로 전환하기](?template=prod_pr_template.md&expand=1)**
 
